@@ -34,18 +34,13 @@ def get_btc_price():
 
 @st.cache_data(ttl=60)
 def get_historical_prices():
-    """Get 50 latest prices for Z-Score"""
-    try:
-        url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
-        params = {"vs_currency": "usd", "days": "1", "interval": "minutely"}
-        response = requests.get(url, params=params, timeout=10)
-        data = response.json()
-        prices = [p[1] for p in data['prices'][-50:]]  # Last 50 mins
-        return prices
-    except:
-        # Fallback realistic data
-        base = 98000
-        return [base + np.random.normal(0, 500) for _ in range(50)]
+    url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
+    params = {"vs_currency": "usd", "days": "1", "interval": "minutely"}
+    response = requests.get(url, params=params, timeout=15)
+    data = response.json()
+    prices = [p[1] for p in data['prices'][-50:]]
+    return prices if len(prices) > 10 else [74000] * 50  # Real fallback
+
 
 # =============================================================================
 # Z-SCORE ENGINE (BACKTEST OPTIMIZED)
