@@ -1,5 +1,5 @@
-streamlit==1.38.0
-pandas==2.2.2
-numpy==1.26.4
-requests==2.31.0
-plotly==5.22.0
+ccxt==4.3.0        # Multi-exchange
+redis==5.0.1       # Event bus  
+deap==1.4.1        # Genetic Algorithm
+python-telegram-bot==20.7  # Telegram alerts
+chromadb==0.5.0    # Memory layer
