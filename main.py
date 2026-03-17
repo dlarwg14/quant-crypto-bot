@@ -35,6 +35,41 @@ df['std20'] = df['close'].rolling(20).std()
 df['zscore'] = (df['close'] - df['sma20']) / df['std20']
 latest_zscore = df['zscore'].dropna().iloc[-1]
 
+# RISK MANAGEMENT ENGINE (NEW SECTION)
+st.markdown("---")
+st.header("🛡️ RISK MANAGEMENT ENGINE")
+
+# KELLY CRITERION POSITION SIZING
+win_rate = 0.65  # From backtests
+avg_win = 0.03   # 3% average win
+avg_loss = 0.015 # 1.5% average loss
+kelly_pct = (win_rate * avg_win - (1-win_rate) * avg_loss) / avg_win
+position_size = min(kelly_pct * 100, 2.0)  # Max 2% risk
+
+col_r1, col_r2, col_r3 = st.columns(3)
+with col_r1: st.metric("🎯 Kelly Criterion", f"{kelly_pct:.1%}")
+with col_r2: st.metric("📏 Position Size", f"{position_size:.1f}%")
+with col_r3: st.metric("🛑 Max Risk/Trade", "2.0%")
+
+# VaR CALCULATION
+returns = df['close'].pct_change().dropna()
+var_95 = np.percentile(returns, 5)
+cvar_95 = returns[returns < var_95].mean()
+
+st.markdown("### 📊 RISK METRICS")
+col_var1, col_var2 = st.columns(2)
+with col_var1: st.metric("VaR 95%", f"{var_95:.2%}")
+with col_var2: st.metric("CVaR 95%", f"{cvar_95:.2%}")
+
+# PORTFOLIO HEATMAP
+st.markdown("### 🔥 PORTFOLIO RISK")
+portfolio_value = 10000
+max_positions = 5
+risk_per_trade = portfolio_value * 0.02  # 2% rule
+st.info(f"💰 $10K portfolio → Max ${risk_per_trade:,.0f} per trade")
+st.info(f"⚡ {max_positions} concurrent positions max")
+
+
 # DASHBOARD LAYOUT
 col1, col2, col3 = st.columns(3)
 with col1: st.metric("💰 BTC PRICE", f"${price:,.0f}")
